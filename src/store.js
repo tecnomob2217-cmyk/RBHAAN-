@@ -87,6 +87,10 @@ export const useAppStore = create(
         set((s) => ({
           withdrawRequests: s.withdrawRequests.map((r) => (r.id === id ? { ...r, status } : r)),
         })),
+      updateWithdrawMethod: (id, patch) =>
+        set((s) => ({
+          withdrawMethods: s.withdrawMethods.map((m) => (m.id === id ? { ...m, ...patch } : m)),
+        })),
 
       settings: {
         appName: 'ربحان',
