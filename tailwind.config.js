@@ -1,14 +1,15 @@
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ['./index.html', './src/**/*.{js,jsx}'],
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
-        primary: '#10b981',
-        primaryDark: '#059669',
-        surface: '#f6f7fb',
+        primary: 'var(--color-primary, #10b981)',
+        primaryDark: 'var(--color-primary-dark, #059669)',
+        surface: 'var(--color-surface, #f6f7fb)',
         card: '#ffffff',
-        ink: '#111827',
+        ink: 'var(--color-ink, #111827)',
         muted: '#6b7280',
       },
       fontFamily: {
