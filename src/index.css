@@ -1,0 +1,41 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  --color-primary: #10b981;
+  --color-primary-dark: #059669;
+  --color-surface: #f6f7fb;
+  --color-ink: #111827;
+}
+
+html.dark {
+  color-scheme: dark;
+  --color-surface: #0f1115;
+  --color-ink: #f3f4f6;
+}
+
+html.dark body { background: var(--color-surface); }
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  @apply bg-surface text-ink font-sans;
+  overscroll-behavior-y: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.app-shell {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+::-webkit-scrollbar { width: 0; height: 0; }
+
+.fade-in { animation: fadeIn 0.25s ease-out; }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
