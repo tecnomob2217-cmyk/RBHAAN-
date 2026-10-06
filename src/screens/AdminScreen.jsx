@@ -112,16 +112,25 @@ function Analytics() {
 
 function Finance() {
   const methods = useAppStore((s) => s.withdrawMethods);
+  const updateWithdrawMethod = useAppStore((s) => s.updateWithdrawMethod);
   const settings = useAppStore((s) => s.settings);
   const updateSettings = useAppStore((s) => s.updateSettings);
   const [saved, flash] = useSavedFlash();
   return (
     <Section title="النظام المالي" sub="الحد الأدنى للسحب وقيمة المكافأة اليومية">
       <SaveToast show={saved} />
+      <p className="mb-2 text-sm font-bold text-muted">الحد الأدنى للسحب لكل طريقة</p>
       {methods.map((m) => (
-        <div key={m.id} className="mb-2 flex items-center justify-between rounded-2xl bg-white p-4 shadow-soft">
-          <span className="text-sm font-semibold">{m.titleKey}</span>
-          <span className="font-black text-primary">{m.min.toFixed(2)} ر.س</span>
+        <div key={m.id} className="mb-2 rounded-2xl bg-white p-4 shadow-soft">
+          <label className="mb-1 block text-sm font-semibold">{m.titleKey}</label>
+          <div className="flex gap-2">
+            <Input
+              type="number" step="0.05" value={m.min}
+              onChange={(e) => updateWithdrawMethod(m.id, { min: +e.target.value })}
+            />
+            <span className="flex shrink-0 items-center px-2 text-sm font-bold text-muted">ر.س</span>
+            <button onClick={flash} className="shrink-0 rounded-2xl bg-primary px-5 text-sm font-bold text-white">حفظ</button>
+          </div>
         </div>
       ))}
       <div className="mt-4 rounded-2xl bg-white p-4 shadow-soft">
@@ -646,4 +655,4 @@ export default function AdminScreen({ t }) {
       </div>
     </div>
   );
-            }
+              }
