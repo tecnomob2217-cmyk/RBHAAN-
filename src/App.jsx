@@ -18,6 +18,7 @@ export default function App() {
   const setView = useAppStore((s) => s.setView);
   const user = useAppStore((s) => s.user);
   const login = useAppStore((s) => s.login);
+  const logout = useAppStore((s) => s.logout);
   const settings = useAppStore((s) => s.settings);
   const [checkingSession, setCheckingSession] = useState(true);
 
@@ -42,6 +43,7 @@ export default function App() {
       }
       const { data: { session } } = await supabase.auth.getSession();
       if (!active) return;
+
       if (session?.user) {
         const { data: profile } = await supabase
           .from('profiles')
@@ -54,6 +56,8 @@ export default function App() {
           email: session.user.email,
           role: profile?.role || 'user',
         });
+      } else if (user) {
+        logout();
       }
       setCheckingSession(false);
     })();
