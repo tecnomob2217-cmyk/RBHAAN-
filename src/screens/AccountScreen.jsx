@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAppStore } from '../store';
+import { supabase } from '../supabaseClient';
 import { Icon } from '../components/icons';
 
 function Card({ icon, title, subtitle, onClick, danger }) {
@@ -125,6 +126,11 @@ export default function AccountScreen({ t }) {
 
   const referralLink = `https://t.me/rabhan_bot?start=ref_${user?.id ?? ''}`;
 
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    logout();
+  };
+
   return (
     <div className="fade-in mx-auto max-w-md px-4 pb-28 pt-6">
       <h1 className="mb-5 text-xl font-black">{t('account')}</h1>
@@ -183,8 +189,8 @@ export default function AccountScreen({ t }) {
         {isAdmin && (
           <Card icon="⚙️" title={t('adminPanel')} onClick={() => setView('admin')} />
         )}
-        <Card icon="↪️" title={t('logout')} danger onClick={logout} />
+        <Card icon="↪️" title={t('logout')} danger onClick={handleLogout} />
       </div>
     </div>
   );
-    }
+          }
