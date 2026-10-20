@@ -1,5 +1,6 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useAppStore } from './store';
+import { supabase } from './supabaseClient';
 import { makeT } from './i18n';
 import AuthScreen from './screens/AuthScreen';
 import HomeScreen from './screens/HomeScreen';
@@ -16,7 +17,9 @@ export default function App() {
   const view = useAppStore((s) => s.view);
   const setView = useAppStore((s) => s.setView);
   const user = useAppStore((s) => s.user);
+  const login = useAppStore((s) => s.login);
   const settings = useAppStore((s) => s.settings);
+  const [checkingSession, setCheckingSession] = useState(true);
 
   useEffect(() => {
     document.documentElement.lang = lang;
@@ -31,6 +34,34 @@ export default function App() {
   }, [settings.appName, settings.primaryColor, settings.primaryColorDark, settings.darkMode]);
 
   useEffect(() => {
+    let active = true;
+    (async () => {
+      if (user?.email === 'google_user@rabhan.app') {
+        setCheckingSession(false);
+        return;
+      }
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!active) return;
+      if (session?.user) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('name, role')
+          .eq('id', session.user.id)
+          .single();
+        login({
+          id: session.user.id,
+          name: profile?.name || session.user.email.split('@')[0],
+          email: session.user.email,
+          role: profile?.role || 'user',
+        });
+      }
+      setCheckingSession(false);
+    })();
+    return () => { active = false; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
     const tg = window.Telegram?.WebApp;
     if (tg) {
       tg.ready();
@@ -40,16 +71,15 @@ export default function App() {
     }
   }, []);
 
-  useEffect(() => {
-    const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user;
-    if (tgUser && !user) {
-      useAppStore.getState().login({
-        id: tgUser.id, name: tgUser.first_name, email: `tg_${tgUser.id}@rabhan.app`, role: 'user',
-      });
-    }
-  }, [user]);
-
   const t = useMemo(() => makeT(lang), [lang]);
+
+  if (checkingSession) {
+    return (
+      <div className="grid min-h-screen place-items-center bg-surface">
+        <div className="h-11 w-11 animate-spin rounded-full border-4 border-emerald-100 border-t-primary" />
+      </div>
+    );
+  }
 
   if (!user) return <AuthScreen t={t} />;
 
